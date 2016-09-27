@@ -1,0 +1,143 @@
+<html><head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>Performance comparison of regular expression engines</title>
+
+  <style type="text/css">
+    body {
+	background-color: #707070;
+	color: #000000;
+	font-family: "garamond"
+    }
+    td.main {
+      background-color: white;
+      color: black;
+      font-family: "garamond"
+    }
+	table.results {
+	  background-color: #B0B0B0;
+	}
+	th {
+	  background-color: #B0C4DE;
+	}
+	td.pattern {
+	  background-color: #F0E68C;
+	  text-align:left;
+	}
+	td.raptor-pattern {
+	  background-color: #E0D67C;
+	  text-align:left;
+	}
+	td.time {
+	  background-color: #E0FFFF;
+	  text-align:right;
+	}
+  </style>
+
+</head>
+
+<body>
+
+<center>
+<table width="760" cellspacing="0" cellpadding="0">
+<tbody><tr height="20"><td class="main" width="20"></td><td class="main" width="720"></td><td class="main" width="20"></td></tr>
+<tr><td class="main" width="20"></td><td class="main" width="720">
+
+<p><em> Read the original (no copy/paste) post
+by <b>dark100</b> at <a href="http://sljit.sourceforge.net/regex_perf.html">http://sljit.sourceforge.net/regex_perf.html</a>
+</em></p>
+
+<h1><center><b>Performance comparison of regular expression engines</b></center></h1>
+
+<h3>Introduction</h3>
+Processing text or raw byte-sequence are among the common tasks performed by most software tools.
+These tasks usually involve pattern matching algorithms, and the most popular tool for such purpose
+is regular expressions. Regular expressions has been evolved a lot since Kleene defined the regular
+sets in the 1950's. Today we have several widely used regular expression engines which have
+different <a href="http://en.wikipedia.org/wiki/Comparison_of_regular_expression_engines">features</a>
+which makes any performance comparison a difficult task, since a <b>faster</b> engine is not necessary
+<b>better</b>. Depending on the use case it might be enough to know whether a POSIX compatible regular
+expression matches to a line, even the position of the match is unneeded (<i>grep utility</i>). On the
+contrary other use cases require the position of capturing brackets, unicode support, conditional and
+atomic block (handling a byte sequence as a single character, like 'sch' in German language) support
+just to name a few. The former case needs a less sophisticated algorithm, which is likely be much
+faster than the latter, but again, that does not mean the former is <b>better</b>. More about these
+engine types can be found <a href="http://sljit.sourceforge.net/regex_compare.html">here</a>.
+
+<h3>Participants</h3>
+The following popular engines were choosen:
+<ul>
+   <li><a href="http://www.pcre.org/">PCRE2 10.10</a></li>
+   <li><a href="https://github.com/laurikari/tre/">tre 0.8.0</a></li>
+   <li><a href="http://www.geocities.jp/kosako3/oniguruma/">Oniguruma 5.9.6</a></li>
+   <li><a href="https://github.com/google/re2">re2 by Google</a></li>
+   <li><a href="http://sljit.sourceforge.net/pcre.html">PCRE2 10.10 with sljit JIT compiler support</a></li>
+</ul>
+
+and
+
+<ul>
+   <li><a href="https://github.com/nasciiboy/RecursiveRegexpRaptor">Recursive Regexp Raptor</a></li>
+</ul>
+
+Before anyone jump to any conclusions, I should note the followings:
+<ul>
+   <li>The engines were not fine tuned (because of my lack of knowledge about their internal workings).
+   I just compiled them with the default options. I know enabling or disabling some features can
+   heavily affect the results. If you feel that you have a better configuration just drop me an
+   e-mail and I will update the results (hzmester(at)freemail(dot)hu).</li>
+   <li>The regular expression engines are compiled with -O3 to allow the best performance.</li>
+   <li>This comparison page was inspired by the work of John Maddock (See his own regex comparison
+   <a href="http://www.boost.org/doc/libs/1_41_0/libs/regex/doc/gcc-performance.html">here</a>).
+   The input is also the same he used before:
+   <a href="http://www.gutenberg.org/files/3200/old/mtent12.zip">mtent12.zip</a>.
+   It is a text file (e-book) which size is about 20 Mbytes.</li>
+   <li>Only common patterns are selected, they are not pathological cases nor have any PERL
+   specific features. The comparison was caseful.</li>
+</ul>
+<p></p>
+
+<h3>Results</h3>
+
+<h2>x86-64 bit Intel Cerelon 847 1.1GHz (GCC 4.8.2, Linux)</h2>
+<table class="results" border="1" width="100%">
+<tbody><tr><th>Regular expression</th><th>Raptor expression</th><th>PCRE</th><th>PCRE<br>-DFA</th><th>TRE</th><th>Onig-<br>uruma</th><th>RE2</th><th>PCRE<br>-JIT</th><th>regexp3</th></tr>
+  <tr><td class="pattern">.|\n</td><td class="raptor-pattern">.</td><td class="time">4505 ms (20045118)</td><td class="time">5198 ms (20045118)</td><td class="time">6531 ms (20045118)</td><td class="time">2169 ms (20045118)</td><td class="time">7393 ms (20045118)</td><td class="time">1071 ms (20045118)</td></td><td class="time">1740 ms (20045118)</td></tr>
+  <tr><td class="pattern">\w</td><td class="raptor-pattern">:w</td><td class="time">2806 ms (14751878)</td><td class="time">4253 ms (14751878)</td><td class="time">4632 ms (14751878)</td><td class="time">2208 ms (14751878)</td><td class="time">5557 ms (14751878)</td><td class="time">943 ms (14751878)</td><td class="time">1818 ms (14750958)</td></tr>
+  <tr><td class="pattern">\d</td><td class="raptor-pattern">:d</td><td class="time">66 ms (27084)</td><td class="time">69 ms (27084)</td><td class="time">1034 ms (27084)</td><td class="time">115 ms (27084)</td><td class="time">231 ms (27084)</td><td class="time">57 ms (27084)</td><td class="time">1725 ms (27084)</td></tr>
+  <tr><td class="pattern">\S</td><td class="raptor-pattern">:S</td><td class="time">2958 ms (15451664)</td><td class="time">3173 ms (15451664)</td><td class="time">4652 ms (15451664)</td><td class="time">1836 ms (15451664)</td><td class="time">5817 ms (15451664)</td><td class="time">885 ms (15451664)</td><td class="time">1830 ms (15451664)</td></tr>
+  <tr><td class="pattern">[.\s]+</td><td class="raptor-pattern">[:.:s]+</td><td class="time">876 ms (3430783)</td><td class="time">1081 ms (3430783)</td><td class="time">1871 ms (991813)</td><td class="time">739 ms (3430783)</td><td class="time">1738 ms (3430783)</td><td class="time">379 ms (3430783)</td><td class="time">4215 ms (3430783)</td></tr>
+  <tr><td class="pattern">[\n.]+</td><td class="raptor-pattern">[\n:.]+</td><td class="time">170 ms (438367)</td><td class="time">233 ms (438367)</td><td class="time">1392 ms (438367)</td><td class="time">204 ms (438367)</td><td class="time">409 ms (438367)</td><td class="time">47 ms (438367)</td><td class="time">4073 ms (438367)</td></tr>
+  <tr><td class="pattern">e</td><td class="raptor-pattern">e</td><td class="time">359 ms (1781425)</td><td class="time">449 ms (1781425)</td><td class="time">502 ms (1781425)</td><td class="time">401 ms (1781425)</td><td class="time">738 ms (1781425)</td><td class="time">133 ms (1781425)</td><td class="time">1701 ms (1781425)</td></tr>
+  <tr><td class="pattern">(((((e)))))</td><td class="raptor-pattern">&lt;&lt;&lt;&lt;&lt;e&gt;&gt;&gt;&gt;&gt;</td><td class="time">1218 ms (1781425)</td><td class="time">1161 ms (1781425)</td><td class="time">501 ms (1781425)</td><td class="time">867 ms (1781425)</td><td class="time">736 ms (1781425)</td><td class="time">199 ms (1781425)</td><td class="time">25333 ms (1781425)</td></tr>
+  <tr><td class="pattern">((((((((((e))))))))))</td><td class="raptor-pattern">&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;e&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;</td><td class="time">1860 ms (1781425)</td><td class="time">1708 ms (1781425)</td><td class="time">502 ms (1781425)</td><td class="time">1146 ms (1781425)</td><td class="time">740 ms (1781425)</td><td class="time">326 ms (1781425)</td><td class="time">80601 ms (1781425)</td></tr>
+  <tr><td class="pattern">Twain</td><td class="raptor-pattern">Twain</td><td class="time">10 ms (2388)</td><td class="time">49 ms (2388)</td><td class="time">996 ms (2388)</td><td class="time">52 ms (2388)</td><td class="time">7 ms (2388)</td><td class="time">50 ms (2388)</td><td class="time">4859 ms (2388)</td></tr>
+  <tr><td class="pattern">(?i)Twain</td><td class="raptor-pattern">#*Twain</td><td class="time">197 ms (2657)</td><td class="time">285 ms (2657)</td><td class="time">1291 ms (2657)</td><td class="time">320 ms (2657)</td><td class="time">254 ms (2657)</td><td class="time">52 ms (2657)</td><td class="time">4935 ms (2657)</td></tr>
+  <tr><td class="pattern">((T|t)(w|W)(a|A)i([a-z]|1))</td><td class="raptor-pattern">&lt;&lt;T|t&gt;&lt;w|W&gt;&lt;a|A&gt;i&lt;[a-z]|1&gt;&gt;</td><td class="time">613 ms (2427)</td><td class="time">527 ms (2427)</td><td class="time">1873 ms (2427)</td><td class="time">301 ms (2427)</td><td class="time">253 ms (2427)</td><td class="time">67 ms (2427)</td><td class="time">23962 ms (2427)</td></tr>
+  <tr><td class="pattern">[a-z]shing</td><td class="raptor-pattern">[a-z]shing</td><td class="time">1459 ms (1877)</td><td class="time">2307 ms (1877)</td><td class="time">1567 ms (1877)</td><td class="time">49 ms (1877)</td><td class="time">348 ms (1877)</td><td class="time">48 ms (1877)</td><td class="time">7559 ms (1877)</td></tr>
+  <tr><td class="pattern">Huck[a-zA-Z]+|Saw[a-zA-Z]+</td><td class="raptor-pattern">Huck[a-zA-Z]+|Saw[a-zA-Z]+</td><td class="time">71 ms (396)</td><td class="time">77 ms (396)</td><td class="time">1571 ms (396)</td><td class="time">120 ms (396)</td><td class="time">222 ms (396)</td><td class="time">9 ms (396)</td><td class="time">9364 ms (396)</td></tr>
+  <tr><td class="pattern">[a-q][^u-z]{13}x</td><td class="raptor-pattern">[a-q][^u-z]{13}x</td><td class="time">1780 ms (4929)</td><td class="time">6286 ms (4929)</td><td class="time">4591 ms (4929)</td><td class="time">152 ms (4929)</td><td class="time">9332 ms (4929)</td><td class="time">5 ms (4929)</td><td class="time">15597 ms (4929)</td></tr>
+  <tr><td class="pattern">Tom|Sawyer|Huckleberry|Finn</td><td class="raptor-pattern">Tom|Sawyer|Huckleberry|Finn</td><td class="time">95 ms (3015)</td><td class="time">103 ms (3015)</td><td class="time">2721 ms (3015)</td><td class="time">140 ms (3015)</td><td class="time">225 ms (3015)</td><td class="time">84 ms (3015)</td><td class="time">23525 ms (3015)</td></tr>
+  <tr><td class="pattern">(Tom|Sawyer|Huckleberry|Finn)</td><td class="raptor-pattern">&lt;Tom|Sawyer|Huckleberry|Finn&gt;</td><td class="time">101 ms (3015)</td><td class="time">106 ms (3015)</td><td class="time">2775 ms (3015)</td><td class="time">140 ms (3015)</td><td class="time">225 ms (3015)</td><td class="time">82 ms (3015)</td><td class="time">38680 ms (3015)</td></tr>
+  <tr><td class="pattern">[hHeELlLlOo][hHeELlLlOo][hHeELlLlOo][hHeELlLlOo][hHeELlLlOo]</td><td class="raptor-pattern">[hHeELlLlOo][hHeELlLlOo][hHeELlLlOo][hHeELlLlOo][hHeELlLlOo]</td><td class="time">624 ms (534)</td><td class="time">896 ms (534)</td><td class="time">3117 ms (534)</td><td class="time">681 ms (534)</td><td class="time">319 ms (534)</td><td class="time">240 ms (534)</td><td class="time">18174 ms (534)</td></tr>
+  <tr><td class="pattern">Tom.{10,25}river|river.{10,25}Tom</td><td class="raptor-pattern">Tom([^(river|\n)]){10,25}river|river([^(Tom|\n)]){10,25}Tom</td><td class="time">205 ms (2)</td><td class="time">258 ms (2)</td><td class="time">1757 ms (2)</td><td class="time">226 ms (2)</td><td class="time">243 ms (2)</td><td class="time">45 ms (2)</td><td class="time">15443 ms (2)</td></tr>
+  <tr><td class="pattern">ing[^a-zA-Z]</td><td class="raptor-pattern">ing[^a-zA-Z]</td><td class="time">144 ms (85956)</td><td class="time">246 ms (85956)</td><td class="time">1116 ms (85956)</td><td class="time">92 ms (85956)</td><td class="time">100 ms (85956)</td><td class="time">54 ms (85956)</td><td class="time">4186 ms (85956)</td></tr>
+  <tr><td class="pattern">[a-zA-Z]ing[^a-zA-Z]</td><td class="raptor-pattern">[a-zA-Z]ing[^a-zA-Z]</td><td class="time">1501 ms (85823)</td><td class="time">2379 ms (85823)</td><td class="time">1835 ms (85823)</td><td class="time">94 ms (85823)</td><td class="time">377 ms (85823)</td><td class="time">57 ms (85823)</td><td class="time">8047 ms (85823)</td></tr>
+  <tr><td class="pattern">([a-zA-Z]+ing)</td><td class="raptor-pattern">&lt;([^(ing|:A)])+ing(([^(ing|:A)])*ing)*&gt;</td><td class="time">4008 ms (95863)</td><td class="time">5699 ms (95863)</td><td class="time">2075 ms (95863)</td><td class="time">2249 ms (95863)</td><td class="time">389 ms (95863)</td><td class="time">228 ms (95863)</td><td class="time">54840 ms (95863)</td></tr>
+  <tr><td class="pattern">([A-Za-z]awyer|[A-Za-z]inn)\s</td><td class="raptor-pattern">&lt;[A-Za-z]awyer|[A-Za-z]inn&gt;:s</td><td class="time">3113 ms (313)</td><td class="time">3617 ms (313)</td><td class="time">2869 ms (313)</td><td class="time">501 ms (313)</td><td class="time">340 ms (313)</td><td class="time">105 ms (313)</td><td class="time">27964 ms (313)</td></tr>
+</tbody></table>
+
+<br>
+<p>Just Donwload, type <code>make</code>. and run <code>runtest</code>.</p>
+<br>
+
+<table width="100%" cellspacing="0" cellpadding="0">
+<tbody><tr><td align="right">Last modification: 26.9.2016</td></tr></tbody></table>
+
+</td><td class="main" width="20"></td></tr>
+<tr height="20"><td class="main" width="20"></td><td class="main" width="720"></td><td class="main" width="20"></td></tr>
+</tbody></table>
+</center>
+
+
+
+</body></html>

@@ -39,14 +39,31 @@ void load(char* file_name)
 	printf("'%s' loaded. (Length: %d bytes)\n", file_name, data_len);
 }
 
+#include "regexp3/regexp3.h"
+
+char * toHTML( char *input, char *output ){
+  char tmp[1024];
+  regexp3( input, "<\n>", strlen( input ) );
+  rplCatch( output, "\\n", 1 );
+
+  regexp3( output, "<:<>", strlen( output ) );
+  rplCatch( tmp, "&lt;", 1 );
+
+  regexp3( tmp, "<:>>", strlen( tmp ) );
+  rplCatch( output, "&gt;", 1 );
+
+  return output;
+}
+
 void find_all(char* pattern, char* raptorPattern, char* subject, int subject_len)
 {
 #ifdef HTML
-  printf("<tr><td class=\"pattern\">%s</td><td class=\"raptor-pattern\">%s</td>", pattern, raptorPattern);
+  char str[2][1024];
+  printf("<tr><td class=\"pattern\"><table><tr><td>%s</td></tr><tr><td class=\"raptor-pattern\">%s</td></tr></table></td>", toHTML( pattern, str[0] ), toHTML( raptorPattern, str[1] ));
 #else
 	printf("-----------------\nRegex: '%s'\n", pattern);
 #endif
-#define LOOPS 10
+#define LOOPS 5
 	pcre2_find_all(pattern, subject, subject_len, LOOPS, 0);
 	pcre2_find_all(pattern, subject, subject_len, LOOPS, 1);
 	tre_find_all(pattern, subject, subject_len, LOOPS);
@@ -54,6 +71,7 @@ void find_all(char* pattern, char* raptorPattern, char* subject, int subject_len
 	re2_find_all(pattern, subject, subject_len, LOOPS);
 	pcre2_find_all(pattern, subject, subject_len, LOOPS, 2);
         regexp3_find_all(raptorPattern, subject, subject_len, LOOPS );
+        regexp4_find_all(raptorPattern, subject, subject_len, LOOPS );
 #ifdef HTML
 	printf("</tr>\n");
 #endif
@@ -96,6 +114,8 @@ int main()
                  "<<<<<e>>>>>", data, data_len);
 	find_all("((((((((((e))))))))))",
                  "<<<<<<<<<<e>>>>>>>>>>", data, data_len);
+	find_all("Twain",
+                 "Twain", data, data_len);
 	find_all("(Twain)",
                  "<Twain>", data, data_len);
 	find_all("(?i)Twain",
@@ -115,7 +135,7 @@ int main()
 	find_all("[hHeELlLlOo][hHeELlLlOo][hHeELlLlOo][hHeELlLlOo][hHeELlLlOo]",
                  "[hHeELlLlOo][hHeELlLlOo][hHeELlLlOo][hHeELlLlOo][hHeELlLlOo]", data, data_len);
 	find_all("Tom.{10,25}river|river.{10,25}Tom",
-                 "Tom([^(river|\n)]){10,25}river|river([^(Tom|\n)]){10,25}Tom", data, data_len);
+                 "<Tom([^(river|\n)]){10,25}river|river([^(Tom|\n)]){10,25}Tom>", data, data_len);
 	find_all("ing[^a-zA-Z]",
                  "ing[^a-zA-Z]", data, data_len);
 	find_all("[a-zA-Z]ing[^a-zA-Z]",

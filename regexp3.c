@@ -22,11 +22,11 @@ void regexp3_find_all(char* pattern, char* subject, int subject_len, int repeat 
   } while (--repeat > 0);
 
   // printf("regexp3 log start\n" );
-  //
+
   // int i = 0, max = totalCatch();
   // while( ++i <= max )
   //   printf( "%.*s %ld %ld\n", (int)lenCatch( i ), gpsCatch( i ), gpsCatch(i) - subject, (gpsCatch(i) - subject) + lenCatch(i));
-  //
+
   // printf("regexp3 log end\n" );
 
   printResult("regexp3", best_time, found);

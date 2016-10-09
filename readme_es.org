@@ -1,32 +1,36 @@
-#+TITLE: Performance comparison of regular expression engines
+#+TITLE: Comparacion del Rendimiento de Morotes de Expresiones Regulares
 
-lang ([[readme.org][es]])
+lang ([[readme.org][en]])
 
-Read the original (no copy/paste) post by *dark100* at
+Esta obra es un derivado del post hecho por *dark100*, incluye algunos cambios
+al original y un punto de visto demasiado personal de creador de dos motores
+desconocidos, por fabor consulta el original aqui ->
 [[http://sljit.sourceforge.net/regex_perf.html][http://sljit.sourceforge.net/regex_perf.html]]
 
-* Introduction
+* Introduccion
 
-  Processing text or raw byte-sequence are among the common tasks performed by
-  most software tools.  These tasks usually involve pattern matching
-  algorithms, and the most popular tool for such purpose is regular
-  expressions. Regular expressions has been evolved a lot since Kleene defined
-  the regular sets in the 1950's. Today we have several widely used regular
-  expression engines which have different [[http://en.wikipedia.org/wiki/Comparison_of_regular_expression_engines][features]] which makes any performance
-  comparison a difficult task, since a *faster* engine is not necessary
-  *better*. Depending on the use case it might be enough to know whether a
-  POSIX compatible regular expression matches to a line, even the position of
-  the match is unneeded (/grep utility/). On the contrary other use cases
-  require the position of capturing brackets, unicode support, conditional and
-  atomic block (handling a byte sequence as a single character, like 'sch' in
-  German language) support just to name a few. The former case needs a less
-  sophisticated algorithm, which is likely be much faster than the latter, but
-  again, that does not mean the former is *better*. More about these engine
-  types can be found [[http://sljit.sourceforge.net/regex_compare.html][here]].
+  El procesamiento de texto en bruto byte a byte, es una de las tareas mas
+  comunmente realizadas por la mayoría de las herramientas de software. Dentro
+  de estas tareas se suelen incluir algoritmos de busqueda de patrones, y la
+  herramienta más popular para tal fin son las expresiones regulares. Las
+  expresiones regulares han evolucionado mucho desde que Kleene definio los
+  conjuntos regulares en la década de 1950. Hoy en día tenemos varios motores de
+  expresiones regulares ampliamente usados ​​que tienen distintas [[http://en.wikipedia.org/wiki/Comparison_of_regular_expression_engines][caracteristicas]]
+  que vuelven cualquier comparación de rendimiento una tarea difícil, ya que un
+  motor veloz no es necesariamente *mejor*. Dependiendo del caso de uso podría
+  ser suficiente conocer si es compatible con expresiones regulares POSIX para
+  buscar una linea, incluso la posicion de la coincidencia es innecesaria
+  (/utilidad grep/). En los demás casos cuando el uso requiere el soporte para
+  la posición de captura, compatibilidad con unicode, bloque condicional y
+  manipulación atómica (una secuencia de bytes como un único carácter, como
+  'sch' en alemán). El primer caso necesita un algoritmo de menos sofisticado,
+  que probablemente sea mucho más rápido que el segundo, pero de nuevo, eso no
+  quiere decir que el primero es *mejor*. Puede encontrar más información sobre
+  este tipo de motores [[http://sljit.sourceforge.net/regex_compare.html][aqui]].
 
-* Participants
+* Participantes
 
-  The following popular engines were choosen:
+  Los motores populores eligidos fueron:
 
   - [[PCRE2 10.10]]
   - [[tre 0.8.0]]
@@ -34,31 +38,60 @@ Read the original (no copy/paste) post by *dark100* at
   - [[re2 by Google]]
   - [[PCRE2 10.10 with sljit JIT compiler support]]
 
-  and
+  y
 
   - [[https://github.com/nasciiboy/RecursiveRegexpRaptor][regexp3]]
   - [[https://github.com/nasciiboy/RecursiveRegexpRaptor-4][regexp4]]
 
 
-  Before anyone jump to any conclusions, I should note the followings:
+  Antes de que nadie llegue a ninguna conclusion, debo señalar lo siguiente:
 
+  - Los motores no estaban afinados (debido a mi falta de conocimiento sobre su
+    funcionamiento interno, a excepcion de los mios regexp(3|4)). Solo los he
+    compilado con las opciones predeterminadas. Si usted tiene una mejor
+    configuracion por fabor enviemela y actualizare los resultados
+    ([[mailto:nasciiboy@gmail]]).
 
-  - The engines were not fine tuned (because of my lack of knowledge about
-    their internal workings).  I just compiled them with the default options. I
-    know enabling or disabling some features can heavily affect the results. If
-    you feel that you have a better configuration just drop me an e-mail and I
-    will update the results ([[mailto:nasciiboy@gmail.com]]).
+  - Los motores estan compilados con la opcion =-O3= para un mejor rendimiento.
 
-  - The regular expression engines are compiled with =-O3= to allow the best performance.
+  - Esta comparacion tomo la prueba de *dark100* ([[mailto:hzmester@freemail.hu]]),
+    inspirada en el trabajo de John Maddock (mira su comparacion [[http://www.boost.org/doc/libs/1_41_0/libs/regex/doc/gcc-performance.html][aqui]]). Los
+    datos de entrada tambien son los mismos que el utilizo [[http://www.gutenberg.org/files/3200/old/mtent12.zip][mtent12.zip]]. Es un
+    archivo de texto (e-book) con un tamaño alrededor de 20 Mbytes.
 
-  - This comparison page was inspired by the work of John Maddock (See his own
-    regex comparison [[http://www.boost.org/doc/libs/1_41_0/libs/regex/doc/gcc-performance.html][here]]).  The input is also the same he used before:
-    [[http://www.gutenberg.org/files/3200/old/mtent12.zip][mtent12.zip]].  It is a text file (e-book) which size is about 20 Mbytes.
+  - Solamente fueron seleccionados patrones comunes, no son casos patologicos ni
+    tienen ninguna de las cualidades de Perl (regexp(3|4) solo cumplen casos
+    regexp).
 
-  - Only common patterns are selected, they are not pathological cases nor have
-    any PERL specific features. The comparison was caseful.
+** Consideraciones Extra
 
-* Results
+   A diferencia de la comparacion original, /yo nasciiboy/ la realizo con la
+   arrogante y egolatra intencion de demostrar que miles de lineas de codigo,
+   con funciones idescifrables llenas de guiones bajos, macros misticas y una
+   estructura poco clara, pueden reemplazarse por codigo sensillo y claro.
+
+   Las librerias regexp3 y regexp4 (en fase beta) parten de zero, detras de
+   ellas solo existe la funcionalidad, en buena medida por que caresco de
+   fundamentos matematicos y computacionales a exepcion de un par de libros de
+   programacion en C y un manual de uso de awk.
+
+   regexp3 es la solucion mas pura, sin embargo depende exclusivamente de la
+   recursividad y resuelve la exprecion a cada caracter, por ello el tiempo
+   optenido es drasticamente superior al de los demas motores.
+
+   Por su parte regexp4 primero genera una tabla con instrucciones de como
+   resolver la expresion y luego recorre el texto resolviendo la tabla
+   con... recursividad.
+
+   Ambas librerias solo resuelven expresiones regulares, *no hacen uso de
+   ninguna libreria externa* incluidas las librerias estandar, ni tienen
+   deteccion de errores. adicionalmente cumplen con las siguientes
+   caracteristicas
+
+   regexp3 esta formada por *523* lineas de codigo, regexp4 por *705*,
+   incluyendo la declaracion de muchas funciones.
+
+* Resultados
 ** x86-64 bit Intel Cerelon 847 1.1GHz (GCC 6.2.1, Linux)
 
    #+BEGIN_HTML
@@ -91,6 +124,8 @@ Read the original (no copy/paste) post by *dark100* at
    #+END_HTML
 
 
-   Just Donwload, type =make=. and run =runtest=.
+   Para realizar la prueba solo descarga o clona este repositor, abre un
+   terminal, ejecuta =make=. y luego =runtest=. (Puedes enviarme tu resultado,
+   con informacion del equipo, tu mail y un nick).
 
-   Last modification: 26.9.2016
+   Ultimo madificacion: 09.10.2016

@@ -29,3 +29,4 @@ void tre_find_all(char* pattern, char* subject, int subject_len, int repeat);
 void re2_find_all(char* pattern, char* subject, int subject_len, int repeat);
 void onig_find_all(char* pattern, char* subject, int subject_len, int repeat);
 void regexp3_find_all(char* pattern, char* subject, int subject_len, int repeat );
+void regexp4_find_all(char* pattern, char* subject, int subject_len, int repeat );

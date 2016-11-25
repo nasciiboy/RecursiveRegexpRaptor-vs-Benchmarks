@@ -59,7 +59,7 @@ Read the original (no copy/paste) post by *dark100* at
     any PERL specific features. The comparison was caseful.
 
 * Results
-** x86-64 bit Intel Cerelon 847 1.1GHz (GCC 6.2.1, Linux)
+** x86-64 bit Intel Cerelon 847 1.1GHz (GCC 6.2.1, GNU/Linux)
 
    #+BEGIN_HTML
      <table class="results" border="1" width="100%">

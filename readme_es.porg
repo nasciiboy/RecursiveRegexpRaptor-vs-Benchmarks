@@ -109,9 +109,9 @@ desconocidos, por fabor consulta el original aqui ->
 ** Consideraciones Extra
 
    A diferencia de la comparacion original, /yo nasciiboy/ la realizo con la
-   arrogante y egolatra intencion de demostrar que miles de lineas de codigo,
-   con funciones idescifrables llenas de guiones bajos, macros misticas y una
-   estructura poco clara, pueden reemplazarse por codigo sensillo y claro.
+   intencion de demostrar que miles de lineas de codigo, con funciones
+   idescifrables llenas de guiones bajos, macros misticas y una estructura poco
+   clara, pueden reemplazarse por codigo sensillo y claro.
 
    Las librerias regexp3 y regexp4 (en fase beta) parten de zero, detras de
    ellas solo existe la funcionalidad, en buena medida por que caresco de
@@ -131,13 +131,13 @@ desconocidos, por fabor consulta el original aqui ->
    deteccion de errores. adicionalmente cumplen con las siguientes
    caracteristicas
 
-   regexp3 esta formada por *520* lineas de codigo, regexp4 por *682*,
+   regexp3 esta formada por *547* lineas de codigo, regexp4 por *679*,
    incluyendo la declaracion de muchas funciones.
 
 # * Results
 * Resultados
-# ** x86-64 bit Intel Cerelon 847 1.1GHz (GCC 6.2.1, Linux)
-** x86-64 bit Intel Cerelon 847 1.1GHz (GCC 6.2.1, Linux)
+# ** x86-64 bit Intel Cerelon 847 1.1GHz (GCC 6.2.1, GNU/Linux)
+** x86-64 bit Intel Cerelon 847 1.1GHz (GCC 6.2.1, GNU/Linux)
 
    #+BEGIN_HTML
      <table class="results" border="1" width="100%">
@@ -174,5 +174,3 @@ desconocidos, por fabor consulta el original aqui ->
    Para realizar la prueba solo descarga o clona este repositor, abre un
    terminal, ejecuta =make=. y luego =runtest=. (Puedes enviarme tu resultado,
    con informacion del equipo, tu mail y un nick).
-
-   Ultimo madificacion: 09.10.2016

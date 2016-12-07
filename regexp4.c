@@ -23,7 +23,7 @@ void regexp4_find_all(char* pattern, char* subject, int subject_len, int repeat 
 
   // printf("regexp4 log start\n" );
 
-  // int i = 0, max = totalCatch_4();
+  // int i = 0, max = totCatch_4();
   // while( ++i <= max )
   //   printf( "%.*s %ld %ld\n", (int)lenCatch_4( i ), gpsCatch_4( i ), gpsCatch_4(i) - subject, (gpsCatch_4(i) - subject) + lenCatch_4(i));
 

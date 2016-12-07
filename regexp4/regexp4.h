@@ -1,3 +1,5 @@
+#ifndef REGEXP4_H
+#define REGEXP4_H
 /*************************************************************************
  * <Recursive Regexp Raptor (regexp4) regexp library.>
  * https://github.com/nasciiboy/RecursiveRegexpRaptor-4
@@ -17,11 +19,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ************************************************************************/
 
-int  regexp4      ( char *txt, char *re, int txtLen );
+int  regexp4( char *txt, char *re, int txtLen );
 
-int  totalCatch_4   ();
-char *gpsCatch_4    ( int   index );
-int  lenCatch_4     ( int   index );
-char *cpyCatch_4    ( char *str   ,               int index );
-char *rplCatch_4    ( char *newStr, char *rplStr, int id    );
-char *putCatch_4    ( char *newStr, char *putStr            );
+int   totCatch_4();
+char *gpsCatch_4( int index );
+int   lenCatch_4( int index );
+char *cpyCatch_4( char *str, int index );
+char *rplCatch_4( char *newStr, char *rplStr, int id );
+char *putCatch_4( char *newStr, char *putStr );
+
+#endif

@@ -2,7 +2,7 @@
   regenc.c -  Oniguruma (regular expression library)
 **********************************************************************/
 /*-
- * Copyright (c) 2002-2007  K.Kosako  <sndgk393 AT ybb DOT ne DOT jp>
+ * Copyright (c) 2002-2016  K.Kosako  <sndgk393 AT ybb DOT ne DOT jp>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,6 +34,17 @@ OnigEncoding OnigEncDefaultCharEncoding = ONIG_ENCODING_INIT_DEFAULT;
 extern int
 onigenc_init(void)
 {
+  return 0;
+}
+
+extern int
+onig_initialize_encoding(OnigEncoding enc)
+{
+  if (enc->init != 0 && (enc->is_initialized() == 0)) {
+    int r = (enc->init)();
+    return r;
+  }
+
   return 0;
 }
 
@@ -96,6 +107,20 @@ onigenc_step_back(OnigEncoding enc, const UChar* start, const UChar* s, int n)
   }
   return (UChar* )s;
 }
+
+#if 0
+extern int
+onigenc_mbc_enc_len_end(OnigEncoding enc, const UChar* p, const UChar* end)
+{
+  int len;
+  int n;
+
+  len = ONIGENC_MBC_ENC_LEN(enc, p);
+  n = (int )(end - p);
+
+  return (n < len ? n : len);
+}
+#endif
 
 extern UChar*
 onigenc_step(OnigEncoding enc, const UChar* p, const UChar* end, int n)
@@ -638,6 +663,33 @@ onigenc_always_false_is_allowed_reverse_match(const UChar* s   ARG_UNUSED,
   return FALSE;
 }
 
+extern int
+onigenc_always_true_is_valid_mbc_string(const UChar* s   ARG_UNUSED,
+					const UChar* end ARG_UNUSED)
+{
+  return TRUE;
+}
+
+extern int
+onigenc_length_check_is_valid_mbc_string(OnigEncoding enc,
+					 const UChar* p, const UChar* end)
+{
+  while (p < end) {
+    p += enclen(enc, p);
+  }
+
+  if (p != end)
+    return FALSE;
+  else
+    return TRUE;
+}
+
+extern int
+onigenc_is_valid_mbc_string(OnigEncoding enc, const UChar* s, const UChar* end)
+{
+  return ONIGENC_IS_VALID_MBC_STRING(enc, s, end);
+}
+
 extern OnigCodePoint
 onigenc_mbn_mbc_to_code(OnigEncoding enc, const UChar* p, const UChar* end)
 {
@@ -837,66 +889,29 @@ onigenc_with_ascii_strncmp(OnigEncoding enc, const UChar* p, const UChar* end,
   return 0;
 }
 
-/* Property management */
-static int
-resize_property_list(int new_size, const OnigCodePoint*** plist, int* psize)
+extern int
+onig_codes_cmp(OnigCodePoint a[], OnigCodePoint b[], int n)
 {
-  int size;
-  const OnigCodePoint **list = *plist;
+  int i;
 
-  size = sizeof(OnigCodePoint*) * new_size;
-  if (IS_NULL(list)) {
-    list = (const OnigCodePoint** )xmalloc(size);
+  for (i = 0; i < n; i++) {
+    if (a[i] != b[i])
+      return -1;
   }
-  else {
-    list = (const OnigCodePoint** )xrealloc((void* )list, size);
-  }
-
-  if (IS_NULL(list)) return ONIGERR_MEMORY;
-
-  *plist = list;
-  *psize = new_size;
 
   return 0;
 }
 
 extern int
-onigenc_property_list_add_property(UChar* name, const OnigCodePoint* prop,
-     hash_table_type **table, const OnigCodePoint*** plist, int *pnum,
-     int *psize)
+onig_codes_byte_at(OnigCodePoint codes[], int at)
 {
-#define PROP_INIT_SIZE     16
+  int index;
+  int b;
+  OnigCodePoint code;
 
-  int r;
+  index = at / 3;
+  b     = at % 3;
+  code = codes[index];
 
-  if (*psize <= *pnum) {
-    int new_size = (*psize == 0 ? PROP_INIT_SIZE : *psize * 2);
-    r = resize_property_list(new_size, plist, psize);
-    if (r != 0) return r;
-  }
-
-  (*plist)[*pnum] = prop;
-
-  if (ONIG_IS_NULL(*table)) {
-    *table = onig_st_init_strend_table_with_size(PROP_INIT_SIZE);
-    if (ONIG_IS_NULL(*table)) return ONIGERR_MEMORY;
-  }
-
-  *pnum = *pnum + 1;
-  onig_st_insert_strend(*table, name, name + strlen((char* )name),
-			(hash_data_type )(*pnum + ONIGENC_MAX_STD_CTYPE));
-  return 0;
-}
-
-extern int
-onigenc_property_list_init(int (*f)(void))
-{
-  int r;
-
-  THREAD_ATOMIC_START;
-
-  r = f();
-
-  THREAD_ATOMIC_END;
-  return r;
+  return ((code >> ((2 - b) * 8)) & 0xff);
 }

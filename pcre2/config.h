@@ -53,7 +53,7 @@ sure both macros are undefined; an emulation function will then be used. */
 #define HAVE_BCOPY 1
 
 /* Define to 1 if you have the <bzlib.h> header file. */
-/* #undef HAVE_BZLIB_H */
+#define HAVE_BZLIB_H 1
 
 /* Define to 1 if you have the <dirent.h> header file. */
 #define HAVE_DIRENT_H 1
@@ -112,6 +112,9 @@ sure both macros are undefined; an emulation function will then be used. */
 /* Define to 1 if you have the <sys/types.h> header file. */
 #define HAVE_SYS_TYPES_H 1
 
+/* Define to 1 if you have the <sys/wait.h> header file. */
+#define HAVE_SYS_WAIT_H 1
+
 /* Define to 1 if you have the <unistd.h> header file. */
 #define HAVE_UNISTD_H 1
 
@@ -139,8 +142,7 @@ sure both macros are undefined; an emulation function will then be used. */
    allows for longer patterns in extreme cases. */
 #define LINK_SIZE 2
 
-/* Define to the sub-directory in which libtool stores uninstalled libraries.
-   */
+/* Define to the sub-directory where libtool stores uninstalled libraries. */
 #define LT_OBJDIR ".libs/"
 
 /* The value of MATCH_LIMIT determines the default number of times the
@@ -171,6 +173,9 @@ sure both macros are undefined; an emulation function will then be used. */
    overflow caused by enormously large patterns. */
 #define MAX_NAME_SIZE 32
 
+/* Defining NEVER_BACKSLASH_C locks out the use of \C in all patterns. */
+/* #undef NEVER_BACKSLASH_C */
+
 /* The value of NEWLINE_DEFAULT determines the default newline character
    sequence. PCRE2 client programs can override this by selecting other values
    at run time. The valid values are 1 (CR), 2 (LF), 3 (CRLF), 4 (ANY), and 5
@@ -187,7 +192,7 @@ sure both macros are undefined; an emulation function will then be used. */
 #define PACKAGE_NAME "PCRE2"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "PCRE2 10.20-RC1"
+#define PACKAGE_STRING "PCRE2 10.23-RC1"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "pcre2"
@@ -196,19 +201,26 @@ sure both macros are undefined; an emulation function will then be used. */
 #define PACKAGE_URL ""
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "10.20-RC1"
+#define PACKAGE_VERSION "10.23-RC1"
 
 /* The value of PARENS_NEST_LIMIT specifies the maximum depth of nested
    parentheses (of any kind) in a pattern. This limits the amount of system
    stack that is used while compiling a pattern. */
 #define PARENS_NEST_LIMIT 250
 
-/* The value of PCRE2GREP_BUFSIZE determines the size of buffer used by
-   pcre2grep to hold parts of the file it is searching. This is also the
-   minimum value. The actual amount of memory used by pcre2grep is three times
-   this number, because it allows for the buffering of "before" and "after"
-   lines. */
+/* The value of PCRE2GREP_BUFSIZE is the starting size of the buffer used by
+   pcre2grep to hold parts of the file it is searching. The buffer will be
+   expanded up to PCRE2GREP_MAX_BUFSIZE if necessary, for files containing
+   very long lines. The actual amount of memory used by pcre2grep is three
+   times this number, because it allows for the buffering of "before" and
+   "after" lines. */
 #define PCRE2GREP_BUFSIZE 20480
+
+/* The value of PCRE2GREP_MAX_BUFSIZE specifies the maximum size of the buffer
+   used by pcre2grep to hold parts of the file it is searching. The actual
+   amount of memory used by pcre2grep is three times this number, because it
+   allows for the buffering of "before" and "after" lines. */
+#define PCRE2GREP_MAX_BUFSIZE 1048576
 
 /* to make a symbol visible */
 #define PCRE2POSIX_EXP_DECL extern __attribute__ ((visibility ("default")))
@@ -235,7 +247,7 @@ sure both macros are undefined; an emulation function will then be used. */
 #define PCRE2_EXP_DEFN __attribute__ ((visibility ("default")))
 
 /* Define to any value if linking statically (TODO: make nice with Libtool) */
-#define PCRE2_STATIC 1
+/* #undef PCRE2_STATIC */
 
 /* Define to necessary symbol if this constant uses a non-standard name on
    your system. */
@@ -261,14 +273,18 @@ sure both macros are undefined; an emulation function will then be used. */
    is able to handle .gz files. */
 /* #undef SUPPORT_LIBZ */
 
-/* Define to any value to enable JIT support in pcre2grep. */
+/* Define to any value to enable callout script support in pcre2grep. */
+#define SUPPORT_PCRE2GREP_CALLOUT /**/
+
+/* Define to any value to enable JIT support in pcre2grep. Note that this will
+   have no effect unless SUPPORT_JIT is also defined. */
 #define SUPPORT_PCRE2GREP_JIT /**/
 
 /* Define to any value to enable the 16 bit PCRE2 library. */
-#define SUPPORT_PCRE2_16 /**/
+/* #undef SUPPORT_PCRE2_16 */
 
 /* Define to any value to enable the 32 bit PCRE2 library. */
-#define SUPPORT_PCRE2_32 /**/
+/* #undef SUPPORT_PCRE2_32 */
 
 /* Define to any value to enable the 8 bit PCRE2 library. */
 #define SUPPORT_PCRE2_8 /**/
@@ -283,7 +299,7 @@ sure both macros are undefined; an emulation function will then be used. */
 /* #undef SUPPORT_VALGRIND */
 
 /* Version number of package */
-#define VERSION "10.20-RC1"
+#define VERSION "10.23-RC1"
 
 /* Define to empty if `const' does not conform to ANSI C. */
 /* #undef const */

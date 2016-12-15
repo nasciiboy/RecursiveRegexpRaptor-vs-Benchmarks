@@ -191,8 +191,8 @@ typedef struct {
   struct _Node*  target;
   AbsAddrType    call_addr;
   /* for multiple call reference */
-  OnigDistance min_len; /* min length (byte) */
-  OnigDistance max_len; /* max length (byte) */ 
+  OnigLen min_len; /* min length (byte) */
+  OnigLen max_len; /* max length (byte) */
   int char_len;         /* character length  */
   int opt_count;        /* referenced count in optimize_node_left() */
 } EncloseNode;
@@ -306,6 +306,7 @@ typedef struct {
   int curr_max_regnum;
   int has_recursion;
 #endif
+  unsigned int parse_depth;
 } ScanEnv;
 
 
@@ -337,7 +338,6 @@ extern Node*  onig_node_new_list P_((Node* left, Node* right));
 extern Node*  onig_node_list_add P_((Node* list, Node* x));
 extern Node*  onig_node_new_alt P_((Node* left, Node* right));
 extern void   onig_node_str_clear P_((Node* node));
-extern int    onig_free_node_list P_((void));
 extern int    onig_names_free P_((regex_t* reg));
 extern int    onig_parse_make_tree P_((Node** root, const UChar* pattern, const UChar* end, regex_t* reg, ScanEnv* env));
 extern int    onig_free_shared_cclass_table P_((void));

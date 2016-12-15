@@ -1,6 +1,6 @@
 include ../MakeGlobals
 
-CFLAGS += -I. -I.. -I..$(DIRSEP).. -DNO_THREADS
+CFLAGS += -std=c++11 -I. -I.. -I..$(DIRSEP).. -DNO_THREADS
 
 TARGET = libre2.a
 
@@ -10,8 +10,9 @@ OBJS = bitstate.o c_helper.o compile.o dfa.o \
 	prog.o re2.o regexp.o set.o \
 	simplify.o stringpiece.o tostring.o \
 	unicode_casefold.o unicode_groups.o \
-	util$(DIRSEP)hash.o util$(DIRSEP)rune.o \
-	util$(DIRSEP)stringprintf.o util$(DIRSEP)strutil.o
+	fuzzing$(DIRSEP)re2_fuzzer.o \
+	util$(DIRSEP)rune.o util$(DIRSEP)fuzz.o util$(DIRSEP)pcre.o \
+	util$(DIRSEP)strutil.o
 
 .PHONY: all
 all: $(TARGET)

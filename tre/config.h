@@ -42,7 +42,7 @@
 #define HAVE_GETOPT_LONG 1
 
 /* Define if the GNU gettext() function is already present or preinstalled. */
-/* #undef HAVE_GETTEXT */
+#define HAVE_GETTEXT 1
 
 /* Define if you have the iconv() function and it works. */
 /* #undef HAVE_ICONV */
@@ -152,8 +152,7 @@
 /* Define to 1 if the system has the type `wint_t'. */
 #define HAVE_WINT_T 1
 
-/* Define to the sub-directory in which libtool stores uninstalled libraries.
-   */
+/* Define to the sub-directory where libtool stores uninstalled libraries. */
 #define LT_OBJDIR ".libs/"
 
 /* Define if you want to disable debug assertions. */
@@ -163,7 +162,7 @@
 #define PACKAGE "tre"
 
 /* Define to the address where bug reports for this package should be sent. */
-#define PACKAGE_BUGREPORT "tre-general@lists.laurikari.net"
+#define PACKAGE_BUGREPORT ""
 
 /* Define to the full name of this package. */
 #define PACKAGE_NAME "TRE"
@@ -192,7 +191,7 @@
 #define STDC_HEADERS 1
 
 /* Define if you want to enable approximate matching functionality. */
-/* #undef TRE_APPROX */
+#define TRE_APPROX 1
 
 /* Define if you want TRE to print debug messages to stdout. */
 /* #undef TRE_DEBUG */

@@ -41,7 +41,7 @@ regexp4$(DIRSEP)libregexp4.a :
 	$(MAKE) -C regexp4
 
 $(TARGET) : $(OBJS) $(LIBS)
-	$(LD) $(LDFLAGS) -o $@ $(OBJS)  -Lonig -lonig -Lpcre2 -lpcre2 -Lre2 -lre2 -Ltre -ltre -Lregexp3 -lregexp3 -Lregexp4 -lregexp4
+	$(LD) $(LDFLAGS) -o $@ $(OBJS)  -Lonig -lonig -Lpcre2 -lpcre2 -Lre2 -lre2 -Ltre -ltre -Lregexp3 -lregexp3 -Lregexp4 -lregexp4 -pthread
 
 clean:
 	$(RM) $(TARGET) $(OBJS)

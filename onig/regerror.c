@@ -54,6 +54,8 @@ onig_error_code_to_format(int code)
     p = "fail to memory allocation"; break;
   case ONIGERR_MATCH_STACK_LIMIT_OVER:
     p = "match-stack limit over"; break;
+  case ONIGERR_PARSE_DEPTH_LIMIT_OVER:
+    p = "parse depth limit over"; break;
   case ONIGERR_TYPE_BUG:
     p = "undefined type (bug)"; break;
   case ONIGERR_PARSER_BUG:
@@ -68,6 +70,8 @@ onig_error_code_to_format(int code)
     p = "default multibyte-encoding is not setted"; break;
   case ONIGERR_SPECIFIED_ENCODING_CANT_CONVERT_TO_WIDE_CHAR:
     p = "can't convert to wide-char on specified multibyte-encoding"; break;
+  case ONIGERR_FAIL_TO_INITIALIZE:
+    p = "fail to initialize"; break;
   case ONIGERR_INVALID_ARGUMENT:
     p = "invalid argument"; break;
   case ONIGERR_END_PATTERN_AT_LEFT_BRACE:
@@ -138,6 +142,8 @@ onig_error_code_to_format(int code)
 #endif
   case ONIGERR_NUMBERED_BACKREF_OR_CALL_NOT_ALLOWED:
     p = "numbered backref/call is not allowed. (use name)"; break;
+  case ONIGERR_TOO_MANY_CAPTURES:
+    p = "too many captures"; break;
   case ONIGERR_TOO_BIG_WIDE_CHAR_VALUE:
     p = "too big wide-char value"; break;
   case ONIGERR_TOO_LONG_WIDE_CHAR_VALUE:
@@ -172,8 +178,8 @@ onig_error_code_to_format(int code)
     p = "not supported encoding combination"; break;
   case ONIGERR_INVALID_COMBINATION_OF_OPTIONS:
     p = "invalid combination of options"; break;
-  case ONIGERR_OVER_THREAD_PASS_LIMIT_COUNT:
-    p = "over thread pass limit count"; break;
+  case ONIGERR_LIBRARY_IS_NOT_INITIALIZED:
+    p = "library is not initialized"; break;
 
   default:
     p = "undefined error code"; break;
@@ -184,12 +190,12 @@ onig_error_code_to_format(int code)
 
 static void sprint_byte(char* s, unsigned int v)
 {
-  sprintf(s, "%02x", (v & 0377));
+  xsnprintf(s, 3, "%02x", (v & 0377));
 }
 
 static void sprint_byte_with_x(char* s, unsigned int v)
 {
-  sprintf(s, "\\x%02x", (v & 0377));
+  xsnprintf(s, 5, "\\x%02x", (v & 0377));
 }
 
 static int to_ascii(OnigEncoding enc, UChar *s, UChar *end,
@@ -339,26 +345,17 @@ onig_snprintf_with_pattern(buf, bufsize, enc, pat, pat_end, fmt, va_alist)
   need = (pat_end - pat) * 4 + 4;
 
   if (n + need < bufsize) {
-    strcat((char* )buf, ": /");
+    xstrcat((char* )buf, ": /", bufsize);
     s = buf + onigenc_str_bytelen_null(ONIG_ENCODING_ASCII, buf);
 
     p = pat;
     while (p < pat_end) {
-      if (*p == '\\') {
-	*s++ = *p++;
-	len = enclen(enc, p);
-	while (len-- > 0) *s++ = *p++;
-      }
-      else if (*p == '/') {
-	*s++ = (unsigned char )'\\';
-	*s++ = *p++;
-      }
-      else if (ONIGENC_IS_MBC_HEAD(enc, p)) {
+      if (ONIGENC_IS_MBC_HEAD(enc, p)) {
         len = enclen(enc, p);
         if (ONIGENC_MBC_MINLEN(enc) == 1) {
           while (len-- > 0) *s++ = *p++;
         }
-        else { /* for UTF16 */
+        else { /* for UTF16/32 */
           int blen;
 
           while (len-- > 0) {
@@ -368,6 +365,15 @@ onig_snprintf_with_pattern(buf, bufsize, enc, pat, pat_end, fmt, va_alist)
             while (blen-- > 0) *s++ = *bp++;
           }
         }
+      }
+      else if (*p == '\\') {
+	*s++ = *p++;
+	len = enclen(enc, p);
+	while (len-- > 0) *s++ = *p++;
+      }
+      else if (*p == '/') {
+	*s++ = (unsigned char )'\\';
+	*s++ = *p++;
       }
       else if (!ONIGENC_IS_CODE_PRINT(enc, *p) &&
 	       !ONIGENC_IS_CODE_SPACE(enc, *p)) {

@@ -397,7 +397,7 @@ static int walker( int index ){
   for( const int oCindex = Catch.index, oCidx = Catch.idx, oTpos = text.pos;
        table[ index ].command == COM_PATH_ELE;
        index = table[ index ].close, Catch.index = oCindex, Catch.idx = oCidx, text.pos = oTpos )
-    if( table[ index ].re.len && trekking( index + 1 ) ) return TRUE;
+    if( trekking( index + 1 ) ) return TRUE;
 
   return FALSE;
 }
@@ -405,18 +405,16 @@ static int walker( int index ){
 static int loopGroup( int index ){
   int loops = 0, textPos = text.pos;
 
-  if( table[ index ].re.len ){
-    if( table[ index ].re.mods & MOD_NEGATIVE ){
-      while( loops < table[ index ].re.loopsMax && !trekking( index + 1 ) ){
-        textPos++;
-        text.pos = textPos;
-        loops++;
-      }
+  if( table[ index ].re.mods & MOD_NEGATIVE ){
+    while( loops < table[ index ].re.loopsMax && !trekking( index + 1 ) ){
+      textPos++;
       text.pos = textPos;
-    } else
-      while( loops < table[ index ].re.loopsMax && trekking( index + 1 ) )
-        loops++;
-  }
+      loops++;
+    }
+    text.pos = textPos;
+  } else
+    while( loops < table[ index ].re.loopsMax && trekking( index + 1 ) )
+      loops++;
 
   return loops < table[ index ].re.loopsMin ? FALSE : TRUE;
 }

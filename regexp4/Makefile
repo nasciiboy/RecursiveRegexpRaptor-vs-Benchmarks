@@ -1,5 +1,7 @@
 include ../MakeGlobals
 
+CFLAGS += -std=c99
+
 REGEXP4 = regexp4_ascii.c
 
 libregexp4.a : regexp4.o

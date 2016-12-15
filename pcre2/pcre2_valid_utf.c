@@ -7,7 +7,7 @@ and semantics are as close as possible to those of the Perl 5 language.
 
                        Written by Philip Hazel
      Original API code Copyright (c) 1997-2012 University of Cambridge
-         New API code Copyright (c) 2014 University of Cambridge
+         New API code Copyright (c) 2016 University of Cambridge
 
 -----------------------------------------------------------------------------
 Redistribution and use in source and binary forms, with or without
@@ -93,8 +93,8 @@ Returns:       == 0    if the string is a valid UTF string
 int
 PRIV(valid_utf)(PCRE2_SPTR string, PCRE2_SIZE length, PCRE2_SIZE *erroroffset)
 {
-register PCRE2_SPTR p;
-register uint32_t c;
+PCRE2_SPTR p;
+uint32_t c;
 
 /* ----------------- Check a UTF-8 string ----------------- */
 
@@ -133,10 +133,10 @@ PCRE2_ERROR_UTF8_ERR21  Byte with the illegal value 0xfe or 0xff
 
 for (p = string; length > 0; p++)
   {
-  register uint32_t ab, d;
+  uint32_t ab, d;
 
   c = *p;
-  length--; 
+  length--;
 
   if (c < 128) continue;                /* ASCII character */
 
@@ -329,7 +329,7 @@ PCRE2_ERROR_UTF16_ERR3  Isolated low surrogate
 for (p = string; length > 0; p++)
   {
   c = *p;
-  length--; 
+  length--;
 
   if ((c & 0xf800) != 0xd800)
     {

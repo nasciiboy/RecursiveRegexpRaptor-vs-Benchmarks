@@ -7,7 +7,7 @@ and semantics are as close as possible to those of the Perl 5 language.
 
                        Written by Philip Hazel
      Original API code Copyright (c) 1997-2012 University of Cambridge
-         New API code Copyright (c) 2014 University of Cambridge
+         New API code Copyright (c) 2016 University of Cambridge
 
 -----------------------------------------------------------------------------
 Redistribution and use in source and binary forms, with or without
@@ -91,6 +91,7 @@ static const uint8_t autoposstab[APTROWS][APTCOLS] = {
   { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0 }   /* \X */
 };
 
+#ifdef SUPPORT_UNICODE
 /* This table is used to check whether auto-possessification is possible
 between adjacent Unicode property opcodes (OP_PROP and OP_NOTPROP). The
 left-hand (repeated) opcode is used to select the row, and the right-hand
@@ -170,6 +171,7 @@ static const uint8_t posspropstab[3][4] = {
   { ucp_Z, ucp_Z, ucp_C, ucp_Cc },  /* SPACE and PXSPACE, 2nd value redundant */
   { ucp_L, ucp_N, ucp_P, ucp_Po }   /* WORD */
 };
+#endif  /* SUPPORT_UNICODE */
 
 
 
@@ -1059,7 +1061,7 @@ Returns:      0 for success
 int
 PRIV(auto_possessify)(PCRE2_UCHAR *code, BOOL utf, const compile_block *cb)
 {
-register PCRE2_UCHAR c;
+PCRE2_UCHAR c;
 PCRE2_SPTR end;
 PCRE2_UCHAR *repeat_opcode;
 uint32_t list[8];

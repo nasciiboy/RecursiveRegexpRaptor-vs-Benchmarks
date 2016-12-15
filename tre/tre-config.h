@@ -17,7 +17,7 @@
 #define HAVE_WCHAR_H 1
 
 /* Define if you want to enable approximate matching functionality. */
-/* #undef TRE_APPROX */
+#define TRE_APPROX 1
 
 /* Define to enable multibyte character set support. */
 #define TRE_MULTIBYTE 1

@@ -7,7 +7,7 @@ and semantics are as close as possible to those of the Perl 5 language.
 
                        Written by Philip Hazel
      Original API code Copyright (c) 1997-2012 University of Cambridge
-         New API code Copyright (c) 2015 University of Cambridge
+         New API code Copyright (c) 2016 University of Cambridge
 
 -----------------------------------------------------------------------------
 Redistribution and use in source and binary forms, with or without
@@ -71,7 +71,7 @@ PRIV(find_bracket)(PCRE2_SPTR code, BOOL utf, int number)
 {
 for (;;)
   {
-  register PCRE2_UCHAR c = *code;
+  PCRE2_UCHAR c = *code;
 
   if (c == OP_END) return NULL;
 

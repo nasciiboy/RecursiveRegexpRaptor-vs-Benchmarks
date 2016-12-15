@@ -11,5 +11,5 @@ DIRSEP = /
 EXEC =
 
 # -pg for profiling
-CFLAGS = -g -O3 -Wall
-LDFLAGS= -g
+CFLAGS = -O3 -Wall
+LDFLAGS=

@@ -7,7 +7,7 @@ and semantics are as close as possible to those of the Perl 5 language.
 
                        Written by Philip Hazel
      Original API code Copyright (c) 1997-2012 University of Cambridge
-         New API code Copyright (c) 2014 University of Cambridge
+         New API code Copyright (c) 2016 University of Cambridge
 
 -----------------------------------------------------------------------------
 Redistribution and use in source and binary forms, with or without
@@ -65,8 +65,11 @@ enum { SSB_FAIL, SSB_DONE, SSB_CONTINUE, SSB_UNKNOWN };
 
 /* Scan a parenthesized group and compute the minimum length of subject that
 is needed to match it. This is a lower bound; it does not mean there is a
-string of that length that matches. In UTF8 mode, the result is in characters
-rather than bytes.
+string of that length that matches. In UTF mode, the result is in characters
+rather than code units. The field in a compiled pattern for storing the minimum
+length is 16-bits long (on the grounds that anything longer than that is
+pathological), so we give up when we reach that amount. This also means that
+integer overflow for really crazy patterns cannot happen.
 
 Arguments:
   re              compiled pattern block
@@ -98,26 +101,32 @@ uint32_t once_fudge = 0;
 BOOL had_recurse = FALSE;
 BOOL dupcapused = (re->flags & PCRE2_DUPCAPUSED) != 0;
 recurse_check this_recurse;
-register int branchlength = 0;
-register PCRE2_UCHAR *cc = (PCRE2_UCHAR *)code + 1 + LINK_SIZE;
+int branchlength = 0;
+PCRE2_UCHAR *cc = (PCRE2_UCHAR *)code + 1 + LINK_SIZE;
+
+/* If this is a "could be empty" group, its minimum length is 0. */
+
+if (*code >= OP_SBRA && *code <= OP_SCOND) return 0;
+
+/* Skip over capturing bracket number */
+
+if (*code == OP_CBRA || *code == OP_CBRAPOS) cc += IMM2_SIZE;
 
 /* A large and/or complex regex can take too long to process. */
 
 if ((*countptr)++ > 1000) return -1;
 
-/* Skip over capturing bracket number */
-
-if (*code == OP_CBRA || *code == OP_SCBRA ||
-    *code == OP_CBRAPOS || *code == OP_SCBRAPOS) cc += IMM2_SIZE;
-
-/* Scan along the opcodes for this branch. If we get to the end of the
-branch, check the length against that of the other branches. */
+/* Scan along the opcodes for this branch. If we get to the end of the branch,
+check the length against that of the other branches. If the accumulated length
+passes 16-bits, stop. */
 
 for (;;)
   {
   int d, min, recno;
   PCRE2_UCHAR *cs, *ce;
-  register PCRE2_UCHAR op = *cc;
+  PCRE2_UCHAR op = *cc;
+
+  if (branchlength >= UINT16_MAX) return UINT16_MAX;
 
   switch (op)
     {
@@ -556,7 +565,13 @@ for (;;)
       break;
       }
 
-    branchlength += min * d;
+     /* Take care not to overflow: (1) min and d are ints, so check that their
+     product is not greater than INT_MAX. (2) branchlength is limited to
+     UINT16_MAX (checked at the top of the loop). */
+
+    if ((d > 0 && (INT_MAX/d) < min) || UINT16_MAX - branchlength < min*d)
+      branchlength = UINT16_MAX;
+    else branchlength += min * d;
     break;
 
     /* Recursion always refers to the first occurrence of a subpattern with a
@@ -777,7 +792,7 @@ Returns:         nothing
 static void
 set_type_bits(pcre2_real_code *re, int cbit_type, unsigned int table_limit)
 {
-register uint32_t c;
+uint32_t c;
 for (c = 0; c < table_limit; c++)
   re->start_bitmap[c] |= re->tables[c+cbits_offset+cbit_type];
 #if defined SUPPORT_UNICODE && PCRE2_CODE_UNIT_WIDTH == 8
@@ -818,7 +833,7 @@ Returns:         nothing
 static void
 set_nottype_bits(pcre2_real_code *re, int cbit_type, unsigned int table_limit)
 {
-register uint32_t c;
+uint32_t c;
 for (c = 0; c < table_limit; c++)
   re->start_bitmap[c] |= ~(re->tables[c+cbits_offset+cbit_type]);
 #if defined SUPPORT_UNICODE && PCRE2_CODE_UNIT_WIDTH == 8
@@ -858,7 +873,7 @@ Returns:       SSB_FAIL     => Failed to find any starting code units
 static int
 set_start_bits(pcre2_real_code *re, PCRE2_SPTR code, BOOL utf)
 {
-register uint32_t c;
+uint32_t c;
 int yield = SSB_DONE;
 
 #if defined SUPPORT_UNICODE && PCRE2_CODE_UNIT_WIDTH == 8
@@ -1437,7 +1452,7 @@ do
           for (c = 0; c < 16; c++) re->start_bitmap[c] |= classmap[c];
           for (c = 128; c < 256; c++)
             {
-            if ((classmap[c/8] && (1 << (c&7))) != 0)
+            if ((classmap[c/8] & (1 << (c&7))) != 0)
               {
               int d = (c >> 6) | 0xc0;            /* Set bit for this starter */
               re->start_bitmap[d/8] |= (1 << (d&7));  /* and then skip on to the */
@@ -1531,23 +1546,27 @@ if ((re->overall_options & PCRE2_ANCHORED) == 0 &&
   if (rc == SSB_DONE) re->flags |= PCRE2_FIRSTMAPSET;
   }
 
-/* Find the minimum length of subject string. */
+/* Find the minimum length of subject string. If it can match an empty string,
+the minimum length is already known. */
 
-switch(min = find_minlength(re, code, code, utf, NULL, &count))
+if ((re->flags & PCRE2_MATCH_EMPTY) == 0)
   {
-  case -1:  /* \C in UTF mode or (*ACCEPT) or over-complex regex */
-  break;    /* Leave minlength unchanged (will be zero) */
+  switch(min = find_minlength(re, code, code, utf, NULL, &count))
+    {
+    case -1:  /* \C in UTF mode or (*ACCEPT) or over-complex regex */
+    break;    /* Leave minlength unchanged (will be zero) */
 
-  case -2:
-  return 2; /* missing capturing bracket */
+    case -2:
+    return 2; /* missing capturing bracket */
 
-  case -3:
-  return 3; /* unrecognized opcode */
+    case -3:
+    return 3; /* unrecognized opcode */
 
-  default:
-  if (min > UINT16_MAX) min = UINT16_MAX;
-  re->minlength = min;
-  break;
+    default:
+    if (min > UINT16_MAX) min = UINT16_MAX;
+    re->minlength = min;
+    break;
+    }
   }
 
 return 0;

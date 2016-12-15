@@ -1,5 +1,5 @@
-/* config.h.  Generated from config.h.in by configure.  */
-/* config.h.in.  Generated from configure.in by autoheader.  */
+/* src/config.h.  Generated from config.h.in by configure.  */
+/* src/config.h.in.  Generated from configure.ac by autoheader.  */
 
 /* Define to one of `_getb67', `GETB67', `getb67' for Cray-2 and Cray-YMP
    systems. This function is required for `alloca.c' support on those systems.
@@ -58,8 +58,7 @@
 /* Define to 1 if you have the <unistd.h> header file. */
 #define HAVE_UNISTD_H 1
 
-/* Define to the sub-directory in which libtool stores uninstalled libraries.
-   */
+/* Define to the sub-directory where libtool stores uninstalled libraries. */
 #define LT_OBJDIR ".libs/"
 
 /* Name of package */
@@ -72,7 +71,7 @@
 #define PACKAGE_NAME "onig"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "onig 5.9.6"
+#define PACKAGE_STRING "onig 6.1.3"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "onig"
@@ -81,16 +80,16 @@
 #define PACKAGE_URL ""
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "5.9.6"
+#define PACKAGE_VERSION "6.1.3"
 
 /* The size of `int', as computed by sizeof. */
-#define SIZEOF_INT (sizeof(int))
+#define SIZEOF_INT 4
 
 /* The size of `long', as computed by sizeof. */
-#define SIZEOF_LONG (sizeof(long))
+#define SIZEOF_LONG 8
 
 /* The size of `short', as computed by sizeof. */
-#define SIZEOF_SHORT (sizeof(short))
+#define SIZEOF_SHORT 2
 
 /* If using the C implementation of alloca, define if you know the
    direction of stack growth for your system; otherwise it will be
@@ -113,7 +112,7 @@
 /* #undef USE_CRNL_AS_LINE_TERMINATOR */
 
 /* Version number of package */
-#define VERSION "5.9.6"
+#define VERSION "6.1.3"
 
 /* Define to empty if `const' does not conform to ANSI C. */
 /* #undef const */

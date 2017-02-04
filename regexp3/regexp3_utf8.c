@@ -173,7 +173,8 @@ static int tracker( struct RE *rexp, struct RE *track ){
 static void cutSimple( struct RE *rexp, struct RE *track ){
   for( int i = 1; i < rexp->len; i++ )
     switch( rexp->ptr[ i ] & xooooooo ? UTF8 : rexp->ptr[ i ] ){
-    default: cutByLen( rexp, track, i, SIMPLE  ); return;
+    case '(': case '<': case '[': case '@': case ':': case '.': case UTF8:
+      cutByLen( rexp, track, i, SIMPLE  ); return;
     case '?': case '+': case '*': case '{': case '-': case '#':
       if( i == 1 ){
         if( rexp->ptr[ i ] == '-' ) cutByLen( rexp, track, 3, RANGEAB );

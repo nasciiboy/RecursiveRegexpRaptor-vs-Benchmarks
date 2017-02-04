@@ -106,7 +106,7 @@ int main(){
            "[a-zA-Z]+", data, data_len);
   find_all("[.\\s]+",
            "[:.:s]+",
-           "[:.:s]+", data, data_len);
+           "[.:s]+", data, data_len);
   find_all("([^\n]+)",
            "<[^\n]+>",
            "<[^\n]+>", data, data_len);
@@ -166,7 +166,7 @@ int main(){
            "[a-zA-Z]ing[^a-zA-Z]", data, data_len);
   find_all("([a-zA-Z]+ing)",
            "<([^(ing|:A)])+ing(([^(ing|:A)])*ing)*>",
-           "<(ing|:A)+#!ing(((ing|:A)*#!ing)*>", data, data_len);
+           "<(ing|:A)+#!ing((ing|:A)*#!ing)*>", data, data_len);
 
   if( data ) free( data );
   return 0;

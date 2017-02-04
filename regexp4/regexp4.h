@@ -19,13 +19,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ************************************************************************/
 
-int  regexp4( char *txt, char *re, int txtLen );
+int  regexp4( const char *txt, const char *re, const int txtLen );
 
+const
+char *gpsCatch_4( const int index );
 int   totCatch_4();
-char *gpsCatch_4( int index );
-int   lenCatch_4( int index );
-char *cpyCatch_4( char *str, int index );
-char *rplCatch_4( char *newStr, char *rplStr, int id );
-char *putCatch_4( char *newStr, char *putStr );
+int   lenCatch_4( const int index );
+char *cpyCatch_4( char *str, const int index );
+char *rplCatch_4( char *newStr, const char *rplStr, const int id );
+char *putCatch_4( char *newStr, const char *putStr );
 
 #endif

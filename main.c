@@ -52,23 +52,20 @@ char * toHTML( char *input, char *output ){
   return output;
 }
 
-void find_all( char *pattern, char *raptor3Pattern, char *raptor4Pattern, char *subject, int subject_len ){
+void find_all( char *pattern, char *raptorPattern, char *subject, int subject_len ){
   char str[3][1024];
-  if( strcmp( raptor3Pattern, raptor4Pattern ) == 0 )
-    printf("<tr><td class=\"pattern\"><table><tr><td>%s</td></tr><tr><td class=\"raptor3-pattern\">%s</td></tr></table></td>", toHTML( pattern, str[0] ), toHTML( raptor3Pattern, str[1] ));
-  else
-    printf("<tr><td class=\"pattern\"><table><tr><td>%s</td></tr><tr><td class=\"raptor3-pattern\">%s</td></tr><tr><td class=\"raptor4-pattern\">%s</td></tr></table></td>", toHTML( pattern, str[0] ), toHTML( raptor3Pattern, str[1] ), toHTML( raptor4Pattern, str[2] ));
+  printf("<tr><td class=\"pattern\"><table><tr><td>%s</td></tr><tr><td class=\"raptorPattern\">%s</td></tr></table></td>", toHTML( pattern, str[0] ), toHTML( raptorPattern, str[1] ));
 
 #define LOOPS 5
 
-  pcre2_find_all(pattern, subject, subject_len, LOOPS, 0);
-  pcre2_find_all(pattern, subject, subject_len, LOOPS, 1);
-  tre_find_all(pattern, subject, subject_len, LOOPS);
-  onig_find_all(pattern, subject, subject_len, LOOPS);
-  re2_find_all(pattern, subject, subject_len, LOOPS);
-  pcre2_find_all(pattern, subject, subject_len, LOOPS, 2);
-  regexp3_find_all(raptor3Pattern, subject, subject_len, LOOPS );
-  regexp4_find_all(raptor4Pattern, subject, subject_len, LOOPS );
+  pcre2_find_all  (       pattern, subject, subject_len, LOOPS, 0);
+  pcre2_find_all  (       pattern, subject, subject_len, LOOPS, 1);
+  tre_find_all    (       pattern, subject, subject_len, LOOPS);
+  onig_find_all   (       pattern, subject, subject_len, LOOPS);
+  re2_find_all    (       pattern, subject, subject_len, LOOPS);
+  pcre2_find_all  (       pattern, subject, subject_len, LOOPS, 2);
+  regexp3_find_all( raptorPattern, subject, subject_len, LOOPS );
+  regexp4_find_all( raptorPattern, subject, subject_len, LOOPS );
 
   printf("</tr>\n");
 }
@@ -83,89 +80,65 @@ int main(){
   if( data_len == 0 ) return -1;
 
   // find_all("a(aa)+(y)",
-  //          "a(aa)+(y)",
   //          "a(aa)+(y)", "xxaaaayyaaayssaayaaaay", 22); // Test function
 
   find_all(".|\n",
-           ".",
            ".", data, data_len);
-  find_all("\\w",
-           ":w",
-           ":w", data, data_len);
   find_all("\\d",
-           ":d",
            ":d", data, data_len);
   find_all("\\S",
-           ":S",
            ":S", data, data_len);
   find_all("\\S+",
-           ":S+",
            ":S+", data, data_len);
+  find_all("\\w",
+           ":w", data, data_len);
+  find_all("\\w",
+           "[:w_]", data, data_len);
+  find_all("[a-zA-Z0-9_]",
+           "[a-zA-Z0-9_]", data, data_len);
   find_all("[a-zA-Z]+",
-           "[a-zA-Z]+",
            "[a-zA-Z]+", data, data_len);
   find_all("[.\\s]+",
-           "[:.:s]+",
            "[.:s]+", data, data_len);
   find_all("([^\n]+)",
-           "<[^\n]+>",
            "<[^\n]+>", data, data_len);
   find_all("e",
-           "e",
            "e", data, data_len);
   find_all("(((((e)))))",
-           "<<<<<e>>>>>",
            "<<<<<e>>>>>", data, data_len);
   find_all("((((((((((e))))))))))",
-           "<<<<<<<<<<e>>>>>>>>>>",
            "<<<<<<<<<<e>>>>>>>>>>", data, data_len);
   find_all("Twain",
-           "Twain",
            "Twain", data, data_len);
   find_all("(Twain)",
-           "<Twain>",
            "<Twain>", data, data_len);
   find_all("(?i)Twain",
-           "#*Twain",
            "#*Twain", data, data_len);
   find_all("((T|t)([wW])(a|A)i?I?([nN]))",
-           "<<T|t><[wW]><a|A>i?I?<[nN]>>",
            "<<T|t><[wW]><a|A>i?I?<[nN]>>", data, data_len);
   find_all("(T+([w]?(a{1}(i+(n*))))){1}",
-           "<T+<[w]?<a{1}<i+<n*>>>>>{1}",
            "<T+<[w]?<a{1}<i+<n*>>>>>{1}", data, data_len);
   find_all("(?:T+(?:[w]?(?:a{1}(?:i+(?:n*))))){1}",
-           "(T+([w]?(a{1}(i+(n*))))){1}",
            "(T+([w]?(a{1}(i+(n*))))){1}", data, data_len);
   find_all("[a-z]shing",
-           "[a-z]shing",
            "[a-z]shing", data, data_len);
   find_all("Huck[a-zA-Z]+|Saw[a-zA-Z]+",
-           "Huck[a-zA-Z]+|Saw[a-zA-Z]+",
            "Huck[a-zA-Z]+|Saw[a-zA-Z]+", data, data_len);
   find_all("[a-q][^u-z]{13}x",
-           "[a-q][^u-z]{13}x",
            "[a-q][^u-z]{13}x", data, data_len);
   find_all("Tom|Sawyer|Huckleberry|Finn",
-           "Tom|Sawyer|Huckleberry|Finn",
            "Tom|Sawyer|Huckleberry|Finn", data, data_len);
   find_all("(Tom|Sawyer|Huckleberry|Finn)",
-           "<Tom|Sawyer|Huckleberry|Finn>",
            "<Tom|Sawyer|Huckleberry|Finn>", data, data_len);
   find_all("[hHeELlOo][hHeELlOo][hHeELlOo][hHeELlOo][hHeELlOo]",
-           "[hHeELlOo][hHeELlOo][hHeELlOo][hHeELlOo][hHeELlOo]",
            "[hHeELlOo][hHeELlOo][hHeELlOo][hHeELlOo][hHeELlOo]", data, data_len);
   find_all("Tom.{10,25}river|river.{10,25}Tom",
-           "Tom([^(river|\n)]){10,25}river|river([^(Tom|\n)]){10,25}Tom",
            "Tom(river|\n){10,25}#!river|river(Tom|\n){10,25}#!Tom", data, data_len);
   find_all("ing[^a-zA-Z]",
-           "ing[^a-zA-Z]",
            "ing[^a-zA-Z]", data, data_len);
   find_all("[a-zA-Z]ing[^a-zA-Z]",
-           "[a-zA-Z]ing[^a-zA-Z]",
            "[a-zA-Z]ing[^a-zA-Z]", data, data_len);
   find_all("([a-zA-Z]+ing)",
-           "<([^(ing|:A)])+ing(([^(ing|:A)])*ing)*>",
            "<(ing|:A)+#!ing((ing|:A)*#!ing)*>", data, data_len);
 
   if( data ) free( data );

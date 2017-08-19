@@ -31,7 +31,6 @@ do
            $'(T+([w]?(a{1}(i+(n*))))){1}' \
            $'(?:T+(?:[w]?(?:a{1}(?:i+(?:n*))))){1}' \
            $'[a-z]shing' \
-           $'\n +[aeiou][a-z]{5,10}[aeiou] ' \
            $'Huck[a-zA-Z]+|Saw[a-zA-Z]+' \
            $'[a-q][^u-z]{13}x' \
            $'Tom|Sawyer|Huckleberry|Finn' \
@@ -68,7 +67,6 @@ do
            $'<T+<[w]?<a{1}<i+<n*>>>>>{1}' \
            $'(T+([w]?(a{1}(i+(n*))))){1}' \
            $'[a-z]shing' \
-           $'\n +[aeiou][a-z]{5,10}[aeiou] ' \
            $'Huck[a-zA-Z]+|Saw[a-zA-Z]+' \
            $'[a-q][^u-z]{13}x' \
            $'Tom|Sawyer|Huckleberry|Finn' \

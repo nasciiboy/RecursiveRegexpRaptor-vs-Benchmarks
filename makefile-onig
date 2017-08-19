@@ -1,0 +1,26 @@
+include MakeGlobals
+
+TYPE = std
+V    = onig
+
+TARGET = $(EXEC).$(TYPE).$(V)
+
+OBJS = $(V).o
+LIBS = $(V)$(DIRSEP)lib$(V).a
+
+.PHONY: all
+all: $(TARGET)
+
+$(OBJS): $(V).c
+	$(CC) $(CFLAGS) $^ -c -o $@
+
+.PHONY: $(V)$(DIRSEP)lib$(V).a
+$(V)$(DIRSEP)lib$(V).a :
+	$(MAKE) -C $(V)
+
+$(TARGET) : $(OBJS) $(LIBS)
+	$(CC) $(CFLAGS) -o $@ $(OBJS) -L$(V) -l$(V)
+
+clean:
+	$(RM) $(TARGET) $(OBJS)
+	$(MAKE) -C $(V) clean

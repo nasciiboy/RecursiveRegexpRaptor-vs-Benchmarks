@@ -1,15 +1,15 @@
 # One file for all options
 
-CC = gcc
-CPP = g++
-LD = g++
-AR = ar rcs
+CC   = gcc
+CPP  = g++
+LD   = g++
+AR   = ar rcs
 MAKE = make
-RM = rm
+RM   = rm
 
 DIRSEP = /
-EXEC =
+EXEC   = bin
 
 # -pg for profiling
 CFLAGS = -O3 -Wall
-LDFLAGS=
+LDFLAGS= -O3 -Wall

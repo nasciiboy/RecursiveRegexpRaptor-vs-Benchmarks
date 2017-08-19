@@ -3,3 +3,8 @@ runtest
 *.o
 *.a
 *~
+bin.*
+result.*
+maketable
+src/
+table

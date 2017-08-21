@@ -1,10 +1,10 @@
-runtest
 .gitignore
 *.o
 *.a
 *~
 bin.*
 result.*
+data.txt
 maketable
 src/
 table

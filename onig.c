@@ -35,6 +35,8 @@ int main( int argc, char *argv[] ){
       continue;
     }
 
+    const char* srexp = save_rexp( argv[i] );
+
     regex_t* reg;
     OnigRegion *region;
     TIME_TYPE start, end;
@@ -46,7 +48,7 @@ int main( int argc, char *argv[] ){
     res = onig_new(&reg, (unsigned char *)argv[ i ], (unsigned char *)argv[ i ] + strlen((char* )argv[ i ]),
                    ONIG_OPTION_DEFAULT, ONIG_ENCODING_ASCII, ONIG_SYNTAX_DEFAULT, NULL);
     if (res != ONIG_NORMAL) {
-      fprintf( stderr, "Onig: compilation failed \"%s\"\n", argv[ i ] );
+      fprintf( stderr, "Onig: compilation failed \"%s\"\n", srexp );
       fprintf( file_output, "---\n" );
       continue;
     }
@@ -80,8 +82,6 @@ int main( int argc, char *argv[] ){
 
     onig_region_free(region, 1);
     onig_free(reg);
-
-    const char* srexp = save_rexp( argv[i] );
 
     printf( "loops %d, best time %dms, matches %d, rexp \"%s\"\n", n, best_time, found, srexp );
     fprintf( file_output, "%d %d \"%s\"\n", best_time, found, srexp );

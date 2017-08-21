@@ -50,7 +50,14 @@ func main(){
       continue
     }
 
-    re := regexp.MustCompile( rexp )
+    srexp := saveRexp( rexp )
+
+    re, err := regexp.Compile( rexp )
+    if err != nil {
+      fmt.Fprintf( os.Stderr, "re2 (Golang): rexp %q: %v\n", srexp, err )
+      out.WriteString( "---\n" )
+      continue
+    }
 
     var bestTime uint64
     var oneLoop  bool
@@ -68,10 +75,8 @@ func main(){
       }
     }
 
-    srexp := saveRexp( rexp )
-
     fmt.Printf( "loops %d, best time %dms, matches %d, rexp %q\n", n, bestTime, result, srexp )
-    out.WriteString( fmt.Sprintf( "%d %d %s\n", bestTime, result, srexp ) )
+    out.WriteString( fmt.Sprintf( "%d %d %q\n", bestTime, result, srexp ) )
   }
 }
 

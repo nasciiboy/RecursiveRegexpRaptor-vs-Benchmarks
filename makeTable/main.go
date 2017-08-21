@@ -22,13 +22,15 @@ type fileResult struct {
   rows  []row
 }
 
+const target = "table"
+
 func main(){
   if len( os.Args ) < 2 {
     fmt.Fprintf( os.Stderr, "makeTable: empty imput\n" )
     os.Exit( 1 )
   }
 
-  outFile, err := os.Create( "table" )
+  outFile, err := os.Create( target )
   if err != nil {
     fmt.Fprintf( os.Stderr, "makeTable: %v\n", err )
     os.Exit( 1 )
@@ -101,7 +103,6 @@ func main(){
   for y := range results[0].rows {
     outFile.WriteString( `<tr><td class="pattern" ><table>` )
     for key, res := range rexps {
-      // srexp := safeRexp( res[ y ] )
       outFile.WriteString( fmt.Sprintf( "<tr class=%q ><td>%s</tr></td>", key, template.HTMLEscapeString( res[ y ] )  ) )
     }
     outFile.WriteString( `</table></td>` )
@@ -118,8 +119,8 @@ func main(){
   }
   outFile.WriteString( "</tbody>\n" )
 
-
   outFile.WriteString( "</table>\n" )
+  fmt.Fprintf( os.Stdout, "makeTable: The table was created successfully, see %q file\n", target )
 }
 
 
@@ -136,22 +137,4 @@ func GetLines( str string ) (result []string) {
   if last < len( str ) { result = append( result, str[last:] ) }
 
   return result
-}
-
-func safeRexp( str string ) (r string) {
-  for _, c := range str {
-    switch c {
-    case '\a': r += "\\a"
-    case '\b': r += "\\b"
-    case '\t': r += "\\t"
-    case '\n': r += "\\n"
-    case '\v': r += "\\v"
-    case '\f': r += "\\f"
-    case '\r': r += "\\r"
-    case '\\': r += "\\"
-    default: r += string( c )
-    }
-  }
-
-  return
 }

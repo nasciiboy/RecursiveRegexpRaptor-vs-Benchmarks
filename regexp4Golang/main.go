@@ -69,7 +69,7 @@ func main(){
     srexp := saveRexp( rexp )
 
     fmt.Printf( "loops %d, best time %dms, matches %d, rexp %q\n", n, bestTime, re.Result(), srexp )
-    out.WriteString( fmt.Sprintf( "%d %d %s\n", bestTime, re.Result(), srexp ) )
+    out.WriteString( fmt.Sprintf( "%d %d %q\n", bestTime, re.Result(), srexp ) )
   }
 }
 

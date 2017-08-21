@@ -1,6 +1,4 @@
 #include "common-c.h"
-#include "regexp4/regexp4.h"
-
 #include "re2/c_helper.h"
 
 #include <string.h>

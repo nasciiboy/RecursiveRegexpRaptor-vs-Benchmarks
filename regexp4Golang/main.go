@@ -1,13 +1,11 @@
 package main
 
-//#include <time.h>
-import "C"
-
 import (
   "fmt"
   "io/ioutil"
   "os"
   "strconv"
+  "time"
 
   "./regexp4"
 )
@@ -52,33 +50,25 @@ func main(){
 
     re := regexp4.Compile( rexp )
 
-    var bestTime uint64
+    var bestTime time.Duration
     var oneLoop  bool
 
     for i := 0; i < n; i++ {
-      start := CpuTime()
+      start   := time.Now()
       re.FindString( data )
-      time  := DiffCpuTimeByMS( start, CpuTime() )
+      elapsed := time.Since( start )
 
-      if !oneLoop || time < bestTime {
-        bestTime = time
+      if !oneLoop || elapsed < bestTime {
+        bestTime = elapsed
         oneLoop = true
       }
     }
 
     srexp := saveRexp( rexp )
 
-    fmt.Printf( "loops %d, best time %dms, matches %d, rexp %q\n", n, bestTime, re.Result(), srexp )
-    out.WriteString( fmt.Sprintf( "%d %d %q\n", bestTime, re.Result(), srexp ) )
+    fmt.Printf( "loops %d, best time %dms, matches %d, rexp %q\n", n, bestTime / time.Millisecond, re.Result(), srexp )
+    out.WriteString( fmt.Sprintf( "%d %d %q\n", bestTime / time.Millisecond, re.Result(), srexp ) )
   }
-}
-
-func CpuTime() uint64 {
-  return uint64(C.clock())
-}
-
-func DiffCpuTimeByMS( begin, end uint64 ) uint64 {
-  return (end - begin) *  1000 / uint64(C.CLOCKS_PER_SEC)
 }
 
 func saveRexp( str string ) (r string) {

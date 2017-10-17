@@ -22,11 +22,11 @@
 int  regexp4( const char *txt, const char *re, const int txtLen );
 
 const
-char *gpsCatch_4( const int index );
-int   totCatch_4();
-int   lenCatch_4( const int index );
-char *cpyCatch_4( char *str, const int index );
-char *rplCatch_4( char *newStr, const char *rplStr, const int id );
-char *putCatch_4( char *newStr, const char *putStr );
+char *gpsCatch( const int index );
+int   totCatch();
+int   lenCatch( const int index );
+char *cpyCatch( char *str, const int index );
+char *rplCatch( char *newStr, const char *rplStr, const int id );
+char *putCatch( char *newStr, const char *putStr );
 
 #endif

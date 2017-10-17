@@ -1,6 +1,6 @@
 #! /bin/bash
 
-loops=5
+loops=3
 
 stdBins=$(ls -1 bin.std.*)
 raptorBins=$(ls -1 bin.raptor.*)
@@ -27,9 +27,7 @@ do
            $'Twain' \
            $'(Twain)' \
            $'(?i)Twain' \
-           $'((T|t)([wW])(a|A)i?I?([nN]))' \
-           $'(T+([w]?(a{1}(i+(n*))))){1}' \
-           $'(?:T+(?:[w]?(?:a{1}(?:i+(?:n*))))){1}' \
+           $'(?i:Tw)(?:(?:a?A?[i_I]{0,2})?[nN])' \
            $'[a-z]shing' \
            $'Huck[a-zA-Z]+|Saw[a-zA-Z]+' \
            $'[a-q][^u-z]{13}x' \
@@ -63,19 +61,17 @@ do
            $'Twain' \
            $'<Twain>' \
            $'#*Twain' \
-           $'<<T|t><[wW]><a|A>i?I?<[nN]>>' \
-           $'<T+<[w]?<a{1}<i+<n*>>>>>{1}' \
-           $'(T+([w]?(a{1}(i+(n*))))){1}' \
+           $'(Tw)#*((a?A?[i_I]{0,2})?[nN])' \
            $'[a-z]shing' \
            $'Huck[a-zA-Z]+|Saw[a-zA-Z]+' \
            $'[a-q][^u-z]{13}x' \
            $'Tom|Sawyer|Huckleberry|Finn' \
            $'<Tom|Sawyer|Huckleberry|Finn>' \
            $'[hHeELlOo][hHeELlOo][hHeELlOo][hHeELlOo][hHeELlOo]' \
-           $'Tom(river|\n){10,25}#!river|river(Tom|\n){10,25}#!Tom' \
+           $'---' \
            $'ing[^a-zA-Z]' \
            $'[a-zA-Z]ing[^a-zA-Z]' \
-           $'<(ing|:A)+#!ing((ing|:A)*#!ing)*>'
+           $'---'
 done
 
 ./maketable $(ls -r1 result.*)
